@@ -1,115 +1,72 @@
 # Hotel Deals API
 
-A public, read-only WordPress REST API exposing hotel deals in the Netherlands, Belgium and Germany.
-Built for developers, travel bloggers who want structured access to hotel deal data.
+A free, public REST API for hotel deals in the Netherlands.  
+Search by city, price, star rating, or provider — no authentication required.
 
 **Live demo →** [beljp.github.io/hotel-deals-api](https://beljp.github.io/hotel-deals-api)  
-**Data source →** [HotelAanbiedingen.com](https://www.hotelaanbiedingen.com)
+**Data source →** [HotelAanbiedingen.com](https://hotelaanbiedingen.com)
 
 ---
 
-## What it does
+## Base URL
 
-The plugin registers three REST endpoints on any WordPress site:
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/wp-json/hotel-deals/v1/hotels` | Paginated hotel list |
-| GET | `/wp-json/hotel-deals/v1/hotels/{id}` | Single hotel |
-| GET | `/wp-json/hotel-deals/v1/hotels/{id}/deals` | All deals for one hotel |
-| GET | `/wp-json/hotel-deals/v1/deals` | Filterable deal list across all hotels |
-
-All responses are JSON, read-only, cached, and rate-limited. No authentication required.
-
----
-
-## Requirements
-
-- WordPress 6.0+
-- PHP 8.0+
-- The `hotel` custom post type registered on your site
-- A `deals` table (see [Database setup](#database-setup))
-
----
-
-## Installation
-
-1. Download or clone this repository.
-2. Copy the plugin folder (everything except `docs/`) into `wp-content/plugins/hotel-deals-api/`.
-3. Activate the plugin in **WordPress Admin → Plugins**.
-4. Follow the [Database setup](#database-setup) and [Configuration](#configuration) steps below.
-
----
-
-## Database setup
-
-The plugin reads deals from a `deals` table. This table may live in the same database as WordPress or in a separate database.
-
-### Same database
-
-If the `deals` table is in the WordPress database, no extra configuration is needed.
-
-### Separate database (recommended setup)
-
-When the `deals` table is in a different MySQL database you need to:
-
-**1. Grant SELECT access to the WordPress DB user:**
-
-```sql
-GRANT SELECT ON `your_deals_database`.`deals` TO 'wp_db_user'@'localhost';
-FLUSH PRIVILEGES;
 ```
-
-You can find your WordPress database credentials in `wp-config.php`.
-
-**2. Tell the plugin which database to use** (see [Configuration](#configuration)).
-
----
-
-## Configuration
-
-Add these constants to your `wp-config.php` (before `/* That's all, stop editing! */`):
-
-```php
-// Required only when the deals table is in a different database than WordPress
-define( 'HOTEL_DEALS_DB_NAME', 'your_deals_database_name' );
-```
-
-### Optional: enable CORS for the GitHub Pages demo
-
-Add this to your theme's `functions.php` or a site-specific plugin:
-
-```php
-// Allow any origin to read the public API (GET only)
-add_filter( 'hotel_deals_api_enable_cors', '__return_true' );
-
-// Or restrict to specific origins:
-add_filter( 'hotel_deals_api_cors_origins', fn() => [
-    'https://your-frontend.com',
-    'https://beljp.github.io',
-] );
+https://www.hotelaanbiedingen.com/wp-json/hotel-deals/v1
 ```
 
 ---
 
 ## Endpoints
 
-### GET /wp-json/hotel-deals/v1/hotels/{id}/deals
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/deals` | Search deals across all hotels |
+| GET | `/hotels` | Browse the hotel list |
+| GET | `/hotels/{id}` | Single hotel details |
+| GET | `/hotels/{id}/deals` | All deals for one hotel |
 
-Returns all current deals for a single hotel. This is the same data that the `[hotel_aanbiedingen]` shortcode renders on the hotel page.
+---
+
+## GET /deals
+
+Search and filter available hotel deals.
+
+### Query parameters
+
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `city` | string | Filter by city | `Amsterdam` |
+| `province` | string | Filter by province | `Noord-Holland` |
+| `max_price` | number | Maximum price in EUR | `150` |
+| `min_price` | number | Minimum price in EUR | `50` |
+| `stars` | integer | Star rating (1–5) | `4` |
+| `source` | string | Provider: `voordeeluitjes`, `hotelspecials`, `zoweg` | `voordeeluitjes` |
+| `check_in_from` | date | Earliest check-in (YYYY-MM-DD) | `2026-06-01` |
+| `check_in_to` | date | Latest check-in (YYYY-MM-DD) | `2026-06-30` |
+| `limit` | integer | Results per page, max 50 (default: 10) | `20` |
+| `page` | integer | Page number (default: 1) | `2` |
+
+### Example requests
 
 ```bash
-curl "https://hotelaanbiedingen.com/wp-json/hotel-deals/v1/hotels/4821/deals"
+# Deals in Amsterdam under €150
+curl "https://www.hotelaanbiedingen.com/wp-json/hotel-deals/v1/deals?city=Amsterdam&max_price=150"
+
+# 4-star deals from Voordeeluitjes
+curl "https://www.hotelaanbiedingen.com/wp-json/hotel-deals/v1/deals?stars=4&source=voordeeluitjes"
+
+# Deals in June 2026, page 2
+curl "https://www.hotelaanbiedingen.com/wp-json/hotel-deals/v1/deals?check_in_from=2026-06-01&check_in_to=2026-06-30&limit=20&page=2"
 ```
 
-#### Example response
+### Example response
 
 ```json
 {
   "source": "hotelaanbiedingen.com",
-  "hotel_id": 4821,
-  "hotel_url": "https://hotelaanbiedingen.com/hotel/van-der-valk-amsterdam/",
-  "count": 3,
+  "count": 142,
+  "pages": 8,
+  "page": 1,
   "items": [
     {
       "deal_id": 98234,
@@ -130,75 +87,8 @@ curl "https://hotelaanbiedingen.com/wp-json/hotel-deals/v1/hotels/4821/deals"
       "contents": ["Ontbijt", "Gratis parkeren", "Late checkout"],
       "check_in": "2026-06-14",
       "check_out": "2026-06-16",
-      "deal_url": "https://hotelaanbiedingen.com/ga.php?id=98234",
-      "hotel_url": "https://hotelaanbiedingen.com/hotel/van-der-valk-amsterdam/",
-      "last_updated": "2026-05-27"
-    }
-  ]
-}
-```
-
-
-### GET /wp-json/hotel-deals/v1/deals
-
-Returns a paginated list of available deals.
-
-#### Query parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `city` | string | — | Filter by city (partial match) |
-| `province` | string | — | Filter by province slug (exact match) |
-| `max_price` | number | — | Maximum price in EUR |
-| `min_price` | number | — | Minimum price in EUR |
-| `stars` | integer | — | Hotel star rating (1–5) |
-| `source` | string | — | Deal source: `voordeeluitjes`, `hotelspecials`, or `zoweg` |
-| `check_in_from` | date | — | Earliest check-in date (YYYY-MM-DD) |
-| `check_in_to` | date | — | Latest check-in date (YYYY-MM-DD) |
-| `limit` | integer | 10 | Results per page (max 50) |
-| `page` | integer | 1 | Page number |
-
-#### Example requests
-
-```bash
-# Deals in Amsterdam under €150
-curl "https://hotelaanbiedingen.com/wp-json/hotel-deals/v1/deals?city=Amsterdam&max_price=150"
-
-# 4-star deals from Voordeeluitjes
-curl "https://hotelaanbiedingen.com/wp-json/hotel-deals/v1/deals?stars=4&source=voordeeluitjes"
-
-# Weekend deals in June 2026
-curl "https://hotelaanbiedingen.com/wp-json/hotel-deals/v1/deals?check_in_from=2026-06-01&check_in_to=2026-06-30&limit=20"
-```
-
-#### Example response
-
-```json
-{
-  "source": "hotelaanbiedingen.com",
-  "count": 142,
-  "pages": 15,
-  "page": 1,
-  "items": [
-    {
-      "hotel_id": 4821,
-      "hotel_name": "Van der Valk Hotel Amsterdam",
-      "city": "Amsterdam",
-      "stars": 4,
-      "source": "voordeeluitjes",
-      "deal_title": "Weekenddeal inclusief ontbijt",
-      "price": 119.00,
-      "price_original": 159.00,
-      "discount_pct": 25,
-      "currency": "EUR",
-      "offer_nights": 2,
-      "meal_type": "Ontbijt inbegrepen",
-      "room_type": "Standaard tweepersoonskamer",
-      "price_info": "Per persoon, per nacht",
-      "check_in": "2026-06-14",
-      "check_out": "2026-06-16",
-      "offer_link": "https://www.voordeeluitjes.nl/...",
-      "hotel_url": "https://hotelaanbiedingen.com/hotel/van-der-valk-amsterdam/",
+      "deal_url": "https://www.hotelaanbiedingen.com/ga.php?id=98234",
+      "hotel_url": "https://www.hotelaanbiedingen.com/hotel/van-der-valk-amsterdam/",
       "last_updated": "2026-05-27"
     }
   ]
@@ -207,21 +97,21 @@ curl "https://hotelaanbiedingen.com/wp-json/hotel-deals/v1/deals?check_in_from=2
 
 ---
 
-### GET /wp-json/hotel-deals/v1/hotels
+## GET /hotels
 
-Returns a list of hotels.
+Browse available hotels, optionally filtered by city, province or star rating.
 
-#### Query parameters
+### Query parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `city` | string | Filter by city |
-| `province` | string | Filter by province slug |
-| `stars` | integer | Filter by star rating (1–5) |
-| `limit` | integer | Results per page (max 50, default 10) |
+| `province` | string | Filter by province |
+| `stars` | integer | Star rating (1–5) |
+| `limit` | integer | Results per page, max 50 (default: 10) |
 | `page` | integer | Page number |
 
-#### Example response
+### Example response
 
 ```json
 {
@@ -236,8 +126,8 @@ Returns a list of hotels.
       "city": "Amsterdam",
       "province": "Noord-Holland",
       "stars": 4,
-      "image": "https://hotelaanbiedingen.com/wp-content/uploads/...",
-      "hotel_url": "https://hotelaanbiedingen.com/hotel/van-der-valk-amsterdam/",
+      "image": "https://www.hotelaanbiedingen.com/wp-content/uploads/...",
+      "hotel_url": "https://www.hotelaanbiedingen.com/hotel/van-der-valk-amsterdam/",
       "chains": ["Van der Valk"],
       "categories": ["Met ontbijt", "Wellnesshotel"]
     }
@@ -247,75 +137,67 @@ Returns a list of hotels.
 
 ---
 
-### GET /wp-json/hotel-deals/v1/hotels/{id}
+## GET /hotels/{id}/deals
 
-Returns a single hotel by its WordPress post ID.
+Returns all current deals for a specific hotel.
 
 ```bash
-curl "https://hotelaanbiedingen.com/wp-json/hotel-deals/v1/hotels/4821"
+curl "https://www.hotelaanbiedingen.com/wp-json/hotel-deals/v1/hotels/4821/deals"
 ```
+
+Response follows the same deal format as `/deals`, grouped under the hotel.
 
 ---
 
-## Caching & rate limiting
+## Response fields
 
-| Setting | Default | Override filter |
-|---------|---------|-----------------|
-| Cache TTL | 5 minutes | `hotel_deals_api_cache_ttl` |
-| Rate limit | 60 req/min per IP | `hotel_deals_api_rate_limit` |
-| Rate window | 60 seconds | `hotel_deals_api_rate_window` |
+### Deal fields
 
-To disable rate limiting:
-
-```php
-add_filter( 'hotel_deals_api_rate_limit', fn() => 0 );
-```
-
----
-
-## Extensibility (filters)
-
-```php
-// Add fields to the hotel response
-add_filter( 'hotel_deals_api_hotel_item', function( array $hotel, WP_Post $post ) {
-    $hotel['phone'] = get_post_meta( $post->ID, 'phone', true );
-    return $hotel;
-}, 10, 2 );
-
-// Add fields to a deal response
-add_filter( 'hotel_deals_api_deal_item', function( array $deal, object $row ) {
-    $deal['has_pool'] = (bool) get_post_meta( $deal['hotel_id'], 'pool', true );
-    return $deal;
-}, 10, 2 );
-
-// Change the deals table name
-add_filter( 'hotel_deals_api_deals_table', fn() => 'ha_deals' );
-
-// Modify the full response
-add_filter( 'hotel_deals_api_deals_response', function( array $response, array $params ) {
-    $response['api_version'] = '1.0';
-    return $response;
-}, 10, 2 );
-```
+| Field | Type | Description |
+|-------|------|-------------|
+| `deal_id` | integer | Unique deal identifier |
+| `hotel_id` | integer | Hotel identifier |
+| `hotel_name` | string | Hotel name |
+| `city` | string | City |
+| `stars` | integer | Star rating |
+| `source` | string | Provider name |
+| `deal_title` | string | Deal name |
+| `price` | number | Current price in EUR |
+| `price_original` | number | Original price before discount |
+| `discount_pct` | integer | Discount percentage |
+| `currency` | string | Always `EUR` |
+| `offer_nights` | integer | Number of nights included |
+| `meal_type` | string | Meal plan (e.g. breakfast included) |
+| `room_type` | string | Room type |
+| `price_info` | string | Additional price information |
+| `contents` | array | Included amenities |
+| `check_in` | date | Check-in date |
+| `check_out` | date | Check-out date |
+| `deal_url` | string | Link to the deal (tracked redirect) |
+| `hotel_url` | string | Hotel page on HotelAanbiedingen.com |
+| `last_updated` | date | Date the deal was last updated |
 
 ---
 
 ## Use cases
 
-**For developers**
-- Integrate live hotel deals into any web application via a simple REST API.
-- Build travel widgets, price trackers, or destination guides.
-
-**For travel bloggers**
-- Embed the latest deals for a specific city directly on your blog.
-- Automate deal roundups without manual data entry.
-
-## License
-
-MIT — free to use, modify, and redistribute.
+- **Travel blogs** — embed live deals for a specific city in your articles
+- **Price comparison** — pull deals filtered by star rating and budget
+- **Destination guides** — show what's available in a region right now
+- **Affiliate integration** — `deal_url` links are tracked and go directly to the partner booking page
 
 ---
 
-## Credits
+## Limits
 
-Hotel deal data is provided by **[Hotel Aanbiedingen en Arrangementen](https://www.hotelaanbiedingen.com)** — the Netherlands
+- Max 50 results per request (use `page` to paginate)
+- Rate limited to 60 requests per minute per IP
+- Responses are cached for 5 minutes
+
+---
+
+## License
+
+MIT — free to use.
+
+Data provided by **[HotelAanbiedingen.com](https://hotelaanbiedingen.com)**
