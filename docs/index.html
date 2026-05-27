@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel Deals API — Live Demo</title>
+  <meta name="description" content="Live demo of the Hotel Deals API. Search hotel deals in the Netherlands by city, price, and star rating.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <h1>Hotel Deals API</h1>
+      <p class="tagline">
+        A public, read-only REST API for hotel deals in the Netherlands.<br>
+        <a href="https://github.com/hotelaanbiedingen/hotel-deals-api" target="_blank" rel="noopener">View on GitHub</a>
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Search form -->
+    <section class="search-section">
+      <h2>Try the API</h2>
+      <form id="search-form" novalidate>
+        <div class="form-grid">
+
+          <label class="field">
+            <span>City</span>
+            <input type="text" id="city" name="city" placeholder="Amsterdam, Rotterdam…" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span>Max price (€)</span>
+            <input type="number" id="max_price" name="max_price" placeholder="200" min="1" max="9999" step="1">
+          </label>
+
+          <label class="field">
+            <span>Stars</span>
+            <select id="stars" name="stars">
+              <option value="">Any</option>
+              <option value="3">3 ★★★</option>
+              <option value="4">4 ★★★★</option>
+              <option value="5">5 ★★★★★</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Source</span>
+            <select id="source" name="source">
+              <option value="">All</option>
+              <option value="voordeeluitjes">Voordeeluitjes</option>
+              <option value="hotelspecials">Hotelspecials</option>
+              <option value="zoweg">Zoweg</option>
+            </select>
+          </label>
+
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Search Deals</button>
+          <button type="button" id="btn-reset" class="btn-secondary">Reset</button>
+        </div>
+      </form>
+
+      <!-- Live API URL preview -->
+      <div class="api-url-preview">
+        <span class="label">API request:</span>
+        <code id="api-url-display"></code>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="results-section">
+      <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
+      <div id="results-grid" class="results-grid"></div>
+    </section>
+
+    <!-- Endpoint reference -->
+    <section class="docs-section">
+      <h2>Endpoints</h2>
+      <div class="endpoint-table">
+        <div class="endpoint-row header-row">
+          <span>Method</span><span>Endpoint</span><span>Description</span>
+        </div>
+        <div class="endpoint-row">
+          <span class="badge-get">GET</span>
+          <code>/wp-json/hotel-deals/v1/deals</code>
+          <span>List deals (filterable)</span>
+        </div>
+        <div class="endpoint-row">
+          <span class="badge-get">GET</span>
+          <code>/wp-json/hotel-deals/v1/hotels</code>
+          <span>List hotels</span>
+        </div>
+        <div class="endpoint-row">
+          <span class="badge-get">GET</span>
+          <code>/wp-json/hotel-deals/v1/hotels/{id}</code>
+          <span>Single hotel by ID</span>
+        </div>
+      </div>
+
+      <h3>Query parameters for /deals</h3>
+      <div class="params-table">
+        <div class="param-row header-row">
+          <span>Parameter</span><span>Type</span><span>Example</span>
+        </div>
+        <div class="param-row"><code>city</code><span>string</span><span>Amsterdam</span></div>
+        <div class="param-row"><code>province</code><span>string</span><span>Noord-Holland</span></div>
+        <div class="param-row"><code>max_price</code><span>number</span><span>150</span></div>
+        <div class="param-row"><code>min_price</code><span>number</span><span>50</span></div>
+        <div class="param-row"><code>stars</code><span>integer</span><span>4</span></div>
+        <div class="param-row"><code>source</code><span>string</span><span>voordeeluitjes</span></div>
+        <div class="param-row"><code>check_in_from</code><span>date</span><span>2026-06-01</span></div>
+        <div class="param-row"><code>check_in_to</code><span>date</span><span>2026-06-30</span></div>
+        <div class="param-row"><code>limit</code><span>integer</span><span>10 (max 50)</span></div>
+        <div class="param-row"><code>page</code><span>integer</span><span>1</span></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>
+        Hotel deal data powered by
+        <a href="https://hotelaanbiedingen.com" target="_blank" rel="noopener">HotelAanbiedingen.com</a>
+        &bull;
+        <a href="https://github.com/hotelaanbiedingen/hotel-deals-api" target="_blank" rel="noopener">MIT License</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
