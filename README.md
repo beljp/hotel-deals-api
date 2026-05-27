@@ -3,7 +3,7 @@
 A public, read-only WordPress REST API exposing hotel deals in the Netherlands.
 Built for developers, travel bloggers, and affiliates who want structured access to hotel deal data.
 
-**Live demo →** [hotelaanbiedingen.github.io/hotel-deals-api](https://hotelaanbiedingen.github.io/hotel-deals-api)  
+**Live demo →** [hotelaanbiedingen.github.io/hotel-deals-api](https://beljp.github.io/hotel-deals-api)  
 **Data source →** [HotelAanbiedingen.com](https://hotelaanbiedingen.com)
 
 ---
@@ -86,7 +86,7 @@ add_filter( 'hotel_deals_api_enable_cors', '__return_true' );
 // Or restrict to specific origins:
 add_filter( 'hotel_deals_api_cors_origins', fn() => [
     'https://your-frontend.com',
-    'https://hotelaanbiedingen.github.io',
+    'https://beljp.github.io',
 ] );
 ```
 
@@ -138,9 +138,6 @@ curl "https://hotelaanbiedingen.com/wp-json/hotel-deals/v1/hotels/4821/deals"
 }
 ```
 
-> **`deal_url`** is a cloaked redirect link (`/ga.php?id=X`) — the same link used by the shortcode. It tracks clicks and then redirects to the partner's booking page. The raw affiliate URL is never exposed.
-
----
 
 ### GET /wp-json/hotel-deals/v1/deals
 
@@ -313,21 +310,6 @@ add_filter( 'hotel_deals_api_deals_response', function( array $response, array $
 - Embed the latest deals for a specific city directly on your blog.
 - Automate deal roundups without manual data entry.
 
-**For affiliates**
-- Get structured deal data including `offer_link` (deep links) and discount percentages.
-- Filter by source to match your affiliate agreements.
-
----
-
-## Security
-
-- All query parameters are sanitized and validated by WordPress REST API arg definitions.
-- Only whitelisted, public fields are returned. Internal fields (`raw_data`, `contents`, `external_id`) are never exposed.
-- Rate limiting prevents automated scraping.
-- No authentication tokens or credentials appear in API responses.
-
----
-
 ## License
 
 MIT — free to use, modify, and redistribute.
@@ -336,4 +318,4 @@ MIT — free to use, modify, and redistribute.
 
 ## Credits
 
-Hotel deal data is provided by **[HotelAanbiedingen.com](https://hotelaanbiedingen.com)** — the Netherlands' hotel deal aggregator covering Voordeeluitjes, Hotelspecials, and Zoweg.
+Hotel deal data is provided by **[HotelAanbiedingen.com](https://hotelaanbiedingen.com)** — the Netherlands' hotel deal
