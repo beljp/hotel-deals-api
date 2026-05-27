@@ -4,7 +4,7 @@
  * Change API_BASE to your production URL before publishing.
  */
 
-const API_BASE = 'https://hotelaanbiedingen.com/wp-json/hotel-deals/v1';
+const API_BASE = 'https://www.hotelaanbiedingen.com/wp-json/hotel-deals/v1';
 
 // Example hotel IDs for the "browse by hotel" panel (replace with real IDs from your site).
 // GET /wp-json/hotel-deals/v1/hotels?limit=5  to find real IDs.
