@@ -4,7 +4,7 @@ A public, read-only WordPress REST API exposing hotel deals in the Netherlands, 
 Built for developers, travel bloggers who want structured access to hotel deal data.
 
 **Live demo →** [beljp.github.io/hotel-deals-api](https://beljp.github.io/hotel-deals-api)  
-**Data source →** [HotelAanbiedingen.com](https://hotelaanbiedingen.com)
+**Data source →** [HotelAanbiedingen.com](https://www.hotelaanbiedingen.com)
 
 ---
 
@@ -318,4 +318,4 @@ MIT — free to use, modify, and redistribute.
 
 ## Credits
 
-Hotel deal data is provided by **[Hotel Aanbiedingen en Arrangementen](https://hotelaanbiedingen.com)** — the Netherlands
+Hotel deal data is provided by **[Hotel Aanbiedingen en Arrangementen](https://www.hotelaanbiedingen.com)** — the Netherlands
