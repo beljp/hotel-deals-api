@@ -4,7 +4,7 @@ A free, public REST API for hotel deals in the Netherlands.
 Search by city, price, star rating, or provider — no authentication required.
 
 **Live demo →** [beljp.github.io/hotel-deals-api](https://beljp.github.io/hotel-deals-api)  
-**Data source →** [HotelAanbiedingen.com](https://hotelaanbiedingen.com)
+**Data source →** [HotelAanbiedingen.com](https://www.hotelaanbiedingen.com)
 
 ---
 
@@ -85,10 +85,8 @@ curl "https://www.hotelaanbiedingen.com/wp-json/hotel-deals/v1/deals?check_in_fr
       "room_type": "Standaard tweepersoonskamer",
       "price_info": "Per persoon, per nacht",
       "contents": ["Ontbijt", "Gratis parkeren", "Late checkout"],
-      "check_in": "2026-06-14",
-      "check_out": "2026-06-16",
       "deal_url": "https://www.hotelaanbiedingen.com/ga.php?id=98234",
-      "hotel_url": "https://www.hotelaanbiedingen.com/hotel/van-der-valk-amsterdam/",
+      "hotel_url": "https://www.hotelaanbiedingen.com/van-der-valk-amsterdam/",
       "last_updated": "2026-05-27"
     }
   ]
@@ -127,7 +125,7 @@ Browse available hotels, optionally filtered by city, province or star rating.
       "province": "Noord-Holland",
       "stars": 4,
       "image": "https://www.hotelaanbiedingen.com/wp-content/uploads/...",
-      "hotel_url": "https://www.hotelaanbiedingen.com/hotel/van-der-valk-amsterdam/",
+      "hotel_url": "https://www.hotelaanbiedingen.com/van-der-valk-amsterdam/",
       "chains": ["Van der Valk"],
       "categories": ["Met ontbijt", "Wellnesshotel"]
     }
@@ -171,8 +169,6 @@ Response follows the same deal format as `/deals`, grouped under the hotel.
 | `room_type` | string | Room type |
 | `price_info` | string | Additional price information |
 | `contents` | array | Included amenities |
-| `check_in` | date | Check-in date |
-| `check_out` | date | Check-out date |
 | `deal_url` | string | Link to the deal (tracked redirect) |
 | `hotel_url` | string | Hotel page on HotelAanbiedingen.com |
 | `last_updated` | date | Date the deal was last updated |
@@ -200,4 +196,4 @@ Response follows the same deal format as `/deals`, grouped under the hotel.
 
 MIT — free to use.
 
-Data provided by **[HotelAanbiedingen.com](https://hotelaanbiedingen.com)**
+Data provided by **[HotelAanbiedingen.com](https://www.hotelaanbiedingen.com)**
